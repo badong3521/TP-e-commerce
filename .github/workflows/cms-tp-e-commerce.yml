@@ -13,7 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read # Required for actions/checkout
+      contents: read # This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -23,14 +23,13 @@ jobs:
         with:
           node-version: "22.x"
 
-      - name: Install dependencies and build
+      - name: npm install, build
         run: |
           npm install
           npm run build --if-present
 
-      - name: Zip artifact for deployment (excluding unnecessary files)
-        run: |
-          zip -r release.zip . -x "node_modules/*" ".git/*" ".github/*"
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -55,16 +54,15 @@ jobs:
           name: node-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip -d app
+        run: unzip release.zip
 
-      - name: Deploy to Azure Web App
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: "cms-tp-e-commerce"
           slot-name: "Production"
-          package: ./app
+          package: .
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE }}
 
-      - name: Verify deployment
-        run: curl -sSf https://cms-tp-e-commerce.azurewebsites.net || exit 1
+    
