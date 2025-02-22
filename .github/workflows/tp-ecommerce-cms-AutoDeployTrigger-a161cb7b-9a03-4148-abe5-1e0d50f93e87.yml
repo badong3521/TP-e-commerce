@@ -1,0 +1,48 @@
+name: Trigger auto deployment for tp-ecommerce-cms
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/tp-ecommerce-cms-AutoDeployTrigger-a161cb7b-9a03-4148-abe5-1e0d50f93e87.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.TPECOMMERCECMS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.TPECOMMERCECMS_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.TPECOMMERCECMS_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          registryUrl: tpecommerce.azurecr.io
+          registryUsername: ${{ secrets.TPECOMMERCECMS_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.TPECOMMERCECMS_REGISTRY_PASSWORD }}
+          containerAppName: tp-ecommerce-cms
+          resourceGroup: E-commerce
+          imageToBuild: tpecommerce.azurecr.io/tp-ecommerce-cms:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+
