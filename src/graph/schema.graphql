@@ -1,0 +1,38 @@
+type Query {
+  navigation: [Navigation!]!
+  # jpNews: [JpNews!]!
+}
+
+# News Page
+# type JpNews {
+#   id: Int!
+#   date_created: String
+#   title: String
+#   content: String
+#   directus_files: File
+#   slug: String!
+#   tags: [String]
+#   users: Users
+#   author: String
+#   meta_description: String
+# }
+
+type Users {
+  id: String
+  username: String
+  image: String
+  directus_files: File
+}
+
+type File {
+  id: String
+  filename_disk: String
+  title: String
+}
+
+type Navigation {
+  id: Int!
+  title: String!
+  slug: String!
+  children: [Navigation!]
+}
