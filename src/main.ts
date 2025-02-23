@@ -6,7 +6,6 @@ import Fastify from "fastify";
 import { createSchema, createYoga } from "graphql-yoga";
 import cors from "@fastify/cors";
 import { resolvers } from "./graph/resolvers/index.js";
-// import { resolvers } from "./graph/resolvers";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
