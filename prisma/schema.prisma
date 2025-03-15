@@ -141,6 +141,7 @@ model directus_files {
   tus_id                                                                String?             @db.VarChar(64)
   tus_data                                                              Json?               @db.Json
   uploaded_on                                                           DateTime?           @db.Timestamptz(6)
+  blogs                                                                 blogs[]
   directus_folders                                                      directus_folders?   @relation(fields: [folder], references: [id], onUpdate: NoAction, map: "directus_files_folder_foreign")
   directus_users_directus_files_modified_byTodirectus_users             directus_users?     @relation("directus_files_modified_byTodirectus_users", fields: [modified_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "directus_files_modified_by_foreign")
   directus_users_directus_files_uploaded_byTodirectus_users             directus_users?     @relation("directus_files_uploaded_byTodirectus_users", fields: [uploaded_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "directus_files_uploaded_by_foreign")
@@ -148,6 +149,8 @@ model directus_files {
   directus_settings_directus_settings_public_backgroundTodirectus_files directus_settings[] @relation("directus_settings_public_backgroundTodirectus_files")
   directus_settings_directus_settings_public_faviconTodirectus_files    directus_settings[] @relation("directus_settings_public_faviconTodirectus_files")
   directus_settings_directus_settings_public_foregroundTodirectus_files directus_settings[] @relation("directus_settings_public_foregroundTodirectus_files")
+  products                                                              products[]
+  products_files                                                        products_files[]
 }
 
 model directus_flows {
@@ -433,6 +436,8 @@ model directus_users {
   theme_light                                                             String?                  @db.VarChar(255)
   theme_light_overrides                                                   Json?                    @db.Json
   theme_dark_overrides                                                    Json?                    @db.Json
+  blogs_blogs_user_createdTodirectus_users                                blogs[]                  @relation("blogs_user_createdTodirectus_users")
+  blogs_blogs_user_updatedTodirectus_users                                blogs[]                  @relation("blogs_user_updatedTodirectus_users")
   directus_access                                                         directus_access[]
   directus_comments_directus_comments_user_createdTodirectus_users        directus_comments[]      @relation("directus_comments_user_createdTodirectus_users")
   directus_comments_directus_comments_user_updatedTodirectus_users        directus_comments[]      @relation("directus_comments_user_updatedTodirectus_users")
@@ -452,6 +457,8 @@ model directus_users {
   directus_versions_directus_versions_user_updatedTodirectus_users        directus_versions[]      @relation("directus_versions_user_updatedTodirectus_users")
   navigation_navigation_user_createdTodirectus_users                      navigation[]             @relation("navigation_user_createdTodirectus_users")
   navigation_navigation_user_updatedTodirectus_users                      navigation[]             @relation("navigation_user_updatedTodirectus_users")
+  products_products_user_createdTodirectus_users                          products[]               @relation("products_user_createdTodirectus_users")
+  products_products_user_updatedTodirectus_users                          products[]               @relation("products_user_updatedTodirectus_users")
 }
 
 model directus_versions {
@@ -496,12 +503,77 @@ model navigation {
   date_updated                                           DateTime?       @db.Timestamptz(6)
   title                                                  String?         @default("Tiêu đề") @db.VarChar(255)
   slug                                                   String?         @unique(map: "navigation_slug_unique") @default("/") @db.VarChar(255)
-  sort                                                   Int?            @unique(map: "navigation_sort_unique")
+  sort                                                   Int?
   parent_id                                              Int?
-  navigation                                             navigation?     @relation("navigationTonavigation", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "navigation_parent_id_foreign")
+  icon                                                   String?         @db.VarChar(255)
+  navigation                                             navigation?     @relation("navigationTonavigation", fields: [parent_id], references: [id], onUpdate: NoAction, map: "navigation_parent_id_foreign")
   other_navigation                                       navigation[]    @relation("navigationTonavigation")
   directus_users_navigation_user_createdTodirectus_users directus_users? @relation("navigation_user_createdTodirectus_users", fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "navigation_user_created_foreign")
   directus_users_navigation_user_updatedTodirectus_users directus_users? @relation("navigation_user_updatedTodirectus_users", fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "navigation_user_updated_foreign")
 
   @@index([sort], map: "navigation_sort_index")
+}
+
+model blogs {
+  id                                                Int             @id @default(autoincrement())
+  status                                            String          @default("draft") @db.VarChar(255)
+  sort                                              Int?
+  user_created                                      String?         @db.Uuid
+  date_created                                      DateTime?       @db.Timestamptz(6)
+  user_updated                                      String?         @db.Uuid
+  date_updated                                      DateTime?       @db.Timestamptz(6)
+  title                                             String?         @default("Tiêu đề blog") @db.VarChar(255)
+  description                                       String?
+  tags                                              Json?           @db.Json
+  thumbnail                                         String?         @db.Uuid
+  slug                                              String?         @unique(map: "blogs_slug_unique") @db.VarChar(255)
+  meta_description                                  String?
+  directus_files                                    directus_files? @relation(fields: [thumbnail], references: [id], onUpdate: NoAction, map: "blogs_thumbnail_foreign")
+  directus_users_blogs_user_createdTodirectus_users directus_users? @relation("blogs_user_createdTodirectus_users", fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "blogs_user_created_foreign")
+  directus_users_blogs_user_updatedTodirectus_users directus_users? @relation("blogs_user_updatedTodirectus_users", fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "blogs_user_updated_foreign")
+}
+
+model products {
+  id                                                   Int              @id @default(autoincrement())
+  status                                               String           @default("draft") @db.VarChar(255)
+  user_created                                         String?          @db.Uuid
+  date_created                                         DateTime?        @db.Timestamptz(6)
+  user_updated                                         String?          @db.Uuid
+  date_updated                                         DateTime?        @db.Timestamptz(6)
+  title                                                String?          @default("Tiêu đề của sản phẩm") @db.VarChar(255)
+  thumbnail                                            String?          @db.Uuid
+  description                                          String?          @default("Nhập chi tiết sản phẩm")
+  meta_description                                     String?
+  slug                                                 String?          @unique(map: "products_slug_unique") @default("/") @db.VarChar(255)
+  directus_files                                       directus_files?  @relation(fields: [thumbnail], references: [id], onUpdate: NoAction, map: "products_thumbnail_foreign")
+  directus_users_products_user_createdTodirectus_users directus_users?  @relation("products_user_createdTodirectus_users", fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_user_created_foreign")
+  directus_users_products_user_updatedTodirectus_users directus_users?  @relation("products_user_updatedTodirectus_users", fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_user_updated_foreign")
+  products_files                                       products_files[]
+  tags_products                                        tags_products[]
+}
+
+model products_files {
+  id                Int             @id @default(autoincrement())
+  products_id       Int?
+  directus_files_id String?         @db.Uuid
+  sort              Int?
+  directus_files    directus_files? @relation(fields: [directus_files_id], references: [id], onUpdate: NoAction, map: "products_files_directus_files_id_foreign")
+  products          products?       @relation(fields: [products_id], references: [id], onUpdate: NoAction, map: "products_files_products_id_foreign")
+}
+
+model tags {
+  id            Int             @id @default(autoincrement())
+  status        String          @default("draft") @db.VarChar(255)
+  sort          Int?
+  date_created  DateTime?       @db.Timestamptz(6)
+  date_updated  DateTime?       @db.Timestamptz(6)
+  tags_products tags_products[]
+}
+
+model tags_products {
+  id          Int       @id @default(autoincrement())
+  tags_id     Int?
+  products_id Int?
+  products    products? @relation(fields: [products_id], references: [id], onUpdate: NoAction, map: "tags_products_products_id_foreign")
+  tags        tags?     @relation(fields: [tags_id], references: [id], onUpdate: NoAction, map: "tags_products_tags_id_foreign")
 }

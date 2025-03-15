@@ -5,6 +5,10 @@ WORKDIR /app
 COPY . .
 RUN npm install
 
+RUN npm run build
+
+RUN npm run build-orm
+
 RUN cp /app/src/graph/schema.graphql /app/dist/graph/schema.graphql
 
 RUN addgroup --system --gid 1001 graphql
