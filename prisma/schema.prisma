@@ -459,6 +459,9 @@ model directus_users {
   navigation_navigation_user_updatedTodirectus_users                      navigation[]             @relation("navigation_user_updatedTodirectus_users")
   products_products_user_createdTodirectus_users                          products[]               @relation("products_user_createdTodirectus_users")
   products_products_user_updatedTodirectus_users                          products[]               @relation("products_user_updatedTodirectus_users")
+  sessions_sessions_user_createdTodirectus_users                          sessions[]               @relation("sessions_user_createdTodirectus_users")
+  sessions_sessions_user_updatedTodirectus_users                          sessions[]               @relation("sessions_user_updatedTodirectus_users")
+  user                                                                    user[]
 }
 
 model directus_versions {
@@ -576,4 +579,38 @@ model tags_products {
   products_id Int?
   products    products? @relation(fields: [products_id], references: [id], onUpdate: NoAction, map: "tags_products_products_id_foreign")
   tags        tags?     @relation(fields: [tags_id], references: [id], onUpdate: NoAction, map: "tags_products_tags_id_foreign")
+}
+
+model sessions {
+  id                                                   String          @id @db.Uuid
+  status                                               String          @default("draft") @db.VarChar(255)
+  user_created                                         String?         @db.Uuid
+  date_created                                         DateTime?       @db.Timestamptz(6)
+  user_updated                                         String?         @db.Uuid
+  date_updated                                         DateTime?       @db.Timestamptz(6)
+  user_id                                              String?         @db.Uuid
+  session_id                                           String?         @db.VarChar(255)
+  access_token                                         String?         @db.VarChar(255)
+  id_token                                             String?         @db.VarChar(255)
+  expires_at                                           DateTime?       @db.Time(6)
+  directus_users_sessions_user_createdTodirectus_users directus_users? @relation("sessions_user_createdTodirectus_users", fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_user_created_foreign")
+  user                                                 user?           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sessions_user_id_foreign")
+  directus_users_sessions_user_updatedTodirectus_users directus_users? @relation("sessions_user_updatedTodirectus_users", fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_user_updated_foreign")
+}
+
+model user {
+  id             String          @id @db.Uuid
+  status         String          @default("draft") @db.VarChar(255)
+  sort           Int?
+  date_created   DateTime?       @db.Timestamptz(6)
+  user_updated   String?         @db.Uuid
+  date_updated   DateTime?       @db.Timestamptz(6)
+  role           String?         @default("GUEST") @db.VarChar(255)
+  email          String?         @unique(map: "user_email_unique") @db.VarChar(255)
+  username       String?         @db.VarChar(255)
+  provider_type  String?         @db.VarChar(255)
+  provider_id    String?         @db.VarChar(255)
+  avatar         String?         @db.VarChar(255)
+  sessions       sessions[]
+  directus_users directus_users? @relation(fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_updated_foreign")
 }
