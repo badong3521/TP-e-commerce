@@ -1,12 +1,13 @@
 type Query {
   navigation: [Navigation!]!
+  user(id: Int!): User
+  userByProviderId(providerId: String!): User
+  userSessions(userId: Int!): [Session!]
 }
 
-type Users {
-  id: String
-  username: String
-  image: String
-  directus_files: File
+type Mutation {
+  createUser(input: CreateUserInput!): User!
+  createSession(input: CreateSessionInput!): Session!
 }
 
 type File {
@@ -20,4 +21,53 @@ type Navigation {
   title: String!
   slug: String!
   children: [Navigation!]
+}
+
+type User {
+  id: String!
+  email: String!
+  username: String
+  avatar: String
+  role: TypeRole!
+  provider_id: String!
+  provider_type: TypeProvider!
+  sessions: [Session!]
+}
+
+type Session {
+  id: Int!
+  userId: Int!
+  sessionId: String!
+  accessToken: String
+  idToken: String
+  expiresAt: String
+  createdAt: String!
+  user: User!
+}
+
+input CreateUserInput {
+  email: String!
+  username: String
+  avatar: String
+  providerId: String!
+  providerType: TypeProvider!
+}
+
+input CreateSessionInput {
+  userId: Int!
+  sessionId: String!
+  accessToken: String
+  idToken: String
+  expiresAt: String
+}
+
+enum TypeProvider {
+  google
+  facebook
+}
+
+enum TypeRole {
+  GUEST
+  USER
+  ADMIN
 }
