@@ -14,10 +14,18 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type AuthPayload = {
+  __typename?: 'AuthPayload';
+  accessToken: Scalars['String']['output'];
+  refreshToken: Scalars['String']['output'];
+  user: User;
+};
+
 export type CreateSessionInput = {
-  accessToken?: InputMaybe<Scalars['String']['input']>;
+  accessToken: Scalars['String']['input'];
   expiresAt?: InputMaybe<Scalars['String']['input']>;
   idToken?: InputMaybe<Scalars['String']['input']>;
+  refreshToken: Scalars['String']['input'];
   sessionId: Scalars['String']['input'];
   userId: Scalars['Int']['input'];
 };
@@ -25,6 +33,7 @@ export type CreateSessionInput = {
 export type CreateUserInput = {
   avatar?: InputMaybe<Scalars['String']['input']>;
   email: Scalars['String']['input'];
+  id: Scalars['String']['input'];
   providerId: Scalars['String']['input'];
   providerType: TypeProvider;
   username?: InputMaybe<Scalars['String']['input']>;
@@ -37,10 +46,18 @@ export type File = {
   title?: Maybe<Scalars['String']['output']>;
 };
 
+export type LoginInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createSession: Session;
   createUser: User;
+  login: AuthPayload;
+  refreshToken: TokenPayload;
+  register: AuthPayload;
 };
 
 
@@ -51,6 +68,21 @@ export type MutationCreateSessionArgs = {
 
 export type MutationCreateUserArgs = {
   input: CreateUserInput;
+};
+
+
+export type MutationLoginArgs = {
+  input: LoginInput;
+};
+
+
+export type MutationRefreshTokenArgs = {
+  token: Scalars['String']['input'];
+};
+
+
+export type MutationRegisterArgs = {
+  input: RegisterInput;
 };
 
 export type Navigation = {
@@ -67,6 +99,7 @@ export type Query = {
   user?: Maybe<User>;
   userByProviderId?: Maybe<User>;
   userSessions?: Maybe<Array<Session>>;
+  verifyAuth: User;
 };
 
 
@@ -84,21 +117,41 @@ export type QueryUserSessionsArgs = {
   userId: Scalars['Int']['input'];
 };
 
+
+export type QueryVerifyAuthArgs = {
+  token: Scalars['String']['input'];
+};
+
+export type RegisterInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  phone: Scalars['String']['input'];
+  username: Scalars['String']['input'];
+};
+
 export type Session = {
   __typename?: 'Session';
-  accessToken?: Maybe<Scalars['String']['output']>;
+  accessToken: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   expiresAt?: Maybe<Scalars['String']['output']>;
   id: Scalars['Int']['output'];
   idToken?: Maybe<Scalars['String']['output']>;
+  refreshToken: Scalars['String']['output'];
   sessionId: Scalars['String']['output'];
   user: User;
   userId: Scalars['Int']['output'];
 };
 
+export type TokenPayload = {
+  __typename?: 'TokenPayload';
+  accessToken: Scalars['String']['output'];
+  refreshToken: Scalars['String']['output'];
+};
+
 export enum TypeProvider {
   Facebook = 'facebook',
-  Google = 'google'
+  Google = 'google',
+  None = 'none'
 }
 
 export enum TypeRole {
@@ -112,6 +165,7 @@ export type User = {
   avatar?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  phone: Scalars['String']['output'];
   provider_id: Scalars['String']['output'];
   provider_type: TypeProvider;
   role: TypeRole;

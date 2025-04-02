@@ -4,7 +4,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "graphql-codegen --config codegen.yml && tsx watch src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "lint": "eslint --ext .ts .",
     "build-orm": "prisma db pull && prisma generate",
@@ -12,6 +12,8 @@
     "generate-types": "graphql-codegen --config codegen.yml"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.10.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
@@ -21,10 +23,12 @@
     "@graphql-codegen/cli": "^5.0.5",
     "@graphql-codegen/typescript": "^4.1.5",
     "@prisma/client": "^5.7.1",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "fastify": "^5.0.0",
     "graphql": "^16.10.0",
     "graphql-yoga": "^5.7.0",
+    "jsonwebtoken": "^9.0.2",
     "pino-pretty": "^13.0.0",
     "prisma": "^5.7.1",
     "uuid": "^11.1.0"

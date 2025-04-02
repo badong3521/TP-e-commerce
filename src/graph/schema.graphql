@@ -3,11 +3,15 @@ type Query {
   user(id: Int!): User
   userByProviderId(providerId: String!): User
   userSessions(userId: Int!): [Session!]
+  verifyAuth(token: String!): User!
 }
 
 type Mutation {
   createUser(input: CreateUserInput!): User!
   createSession(input: CreateSessionInput!): Session!
+  register(input: RegisterInput!): AuthPayload!
+  login(input: LoginInput!): AuthPayload!
+  refreshToken(token: String!): TokenPayload!
 }
 
 type File {
@@ -38,14 +42,27 @@ type Session {
   id: Int!
   userId: Int!
   sessionId: String!
-  accessToken: String
+  accessToken: String!
+  refreshToken: String!
   idToken: String
   expiresAt: String
   createdAt: String!
   user: User!
 }
 
+type AuthPayload {
+  user: User!
+  accessToken: String!
+  refreshToken: String!
+}
+
+type TokenPayload {
+  accessToken: String!
+  refreshToken: String!
+}
+
 input CreateUserInput {
+  id: String!
   email: String!
   username: String
   avatar: String
@@ -56,9 +73,21 @@ input CreateUserInput {
 input CreateSessionInput {
   userId: Int!
   sessionId: String!
-  accessToken: String
+  accessToken: String!
+  refreshToken: String!
   idToken: String
   expiresAt: String
+}
+
+input RegisterInput {
+  email: String!
+  username: String
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }
 
 enum TypeProvider {

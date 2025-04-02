@@ -375,6 +375,7 @@ model directus_settings {
   public_registration_verify_email                                   Boolean           @default(true)
   public_registration_role                                           String?           @db.Uuid
   public_registration_email_filter                                   Json?             @db.Json
+  visual_editor_urls                                                 Json?             @db.Json
   directus_files_directus_settings_project_logoTodirectus_files      directus_files?   @relation("directus_settings_project_logoTodirectus_files", fields: [project_logo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "directus_settings_project_logo_foreign")
   directus_files_directus_settings_public_backgroundTodirectus_files directus_files?   @relation("directus_settings_public_backgroundTodirectus_files", fields: [public_background], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "directus_settings_public_background_foreign")
   directus_files_directus_settings_public_faviconTodirectus_files    directus_files?   @relation("directus_settings_public_faviconTodirectus_files", fields: [public_favicon], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "directus_settings_public_favicon_foreign")
@@ -593,6 +594,7 @@ model sessions {
   access_token                                         String?         @db.VarChar(255)
   id_token                                             String?         @db.VarChar(255)
   expires_at                                           DateTime?       @db.Time(6)
+  refresh_token                                        String?         @db.VarChar(255)
   directus_users_sessions_user_createdTodirectus_users directus_users? @relation("sessions_user_createdTodirectus_users", fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_user_created_foreign")
   user                                                 user?           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sessions_user_id_foreign")
   directus_users_sessions_user_updatedTodirectus_users directus_users? @relation("sessions_user_updatedTodirectus_users", fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_user_updated_foreign")
@@ -611,6 +613,8 @@ model user {
   provider_type  String?         @db.VarChar(255)
   provider_id    String?         @db.VarChar(255)
   avatar         String?         @db.VarChar(255)
+  password       String?         @db.VarChar(255)
+  phone          String?         @db.VarChar(255)
   sessions       sessions[]
   directus_users directus_users? @relation(fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_updated_foreign")
 }
