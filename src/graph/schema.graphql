@@ -4,6 +4,11 @@ type Query {
   userByProviderId(providerId: String!): User
   userSessions(userId: Int!): [Session!]
   verifyAuth(token: String!): User!
+  products: [Product!]!
+  product(id: Int!): Product
+  productsByCollection(collectionId: Int!): [Product!]!
+  collections: [Collection!]!
+  collection(id: Int!): Collection
 }
 
 type Mutation {
@@ -99,4 +104,37 @@ enum TypeRole {
   GUEST
   USER
   ADMIN
+}
+
+type Product {
+  id: Int!
+  title: String!
+  description: String
+  thumbnail: File
+  price: Int
+  slug: String!
+  collections: [Collection!]
+  images: [File!]
+  tags: [Tag!]
+  status: String!
+  createdAt: String
+  updatedAt: String
+}
+
+type Collection {
+  id: Int!
+  title: String!
+  description: String
+  thumbnail: File
+  status: String!
+  createdAt: String
+  updatedAt: String
+}
+
+type Tag {
+  id: Int!
+  name: String!
+  status: String!
+  createdAt: String
+  updatedAt: String
 }

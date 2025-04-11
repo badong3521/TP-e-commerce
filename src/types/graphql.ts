@@ -21,6 +21,17 @@ export type AuthPayload = {
   user: User;
 };
 
+export type Collection = {
+  __typename?: 'Collection';
+  createdAt?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  status: Scalars['String']['output'];
+  thumbnail?: Maybe<File>;
+  title: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
 export type CreateSessionInput = {
   accessToken: Scalars['String']['input'];
   expiresAt?: InputMaybe<Scalars['String']['input']>;
@@ -93,13 +104,49 @@ export type Navigation = {
   title: Scalars['String']['output'];
 };
 
+export type Product = {
+  __typename?: 'Product';
+  collections?: Maybe<Array<Collection>>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  images?: Maybe<Array<File>>;
+  price?: Maybe<Scalars['Int']['output']>;
+  slug: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  tags?: Maybe<Array<Tag>>;
+  thumbnail?: Maybe<File>;
+  title: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
 export type Query = {
   __typename?: 'Query';
+  collection?: Maybe<Collection>;
+  collections: Array<Collection>;
   navigation: Array<Navigation>;
+  product?: Maybe<Product>;
+  products: Array<Product>;
+  productsByCollection: Array<Product>;
   user?: Maybe<User>;
   userByProviderId?: Maybe<User>;
   userSessions?: Maybe<Array<Session>>;
   verifyAuth: User;
+};
+
+
+export type QueryCollectionArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryProductArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type QueryProductsByCollectionArgs = {
+  collectionId: Scalars['Int']['input'];
 };
 
 
@@ -125,8 +172,7 @@ export type QueryVerifyAuthArgs = {
 export type RegisterInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
-  phone: Scalars['String']['input'];
-  username: Scalars['String']['input'];
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Session = {
@@ -142,6 +188,15 @@ export type Session = {
   userId: Scalars['Int']['output'];
 };
 
+export type Tag = {
+  __typename?: 'Tag';
+  createdAt?: Maybe<Scalars['String']['output']>;
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['String']['output']>;
+};
+
 export type TokenPayload = {
   __typename?: 'TokenPayload';
   accessToken: Scalars['String']['output'];
@@ -150,8 +205,7 @@ export type TokenPayload = {
 
 export enum TypeProvider {
   Facebook = 'facebook',
-  Google = 'google',
-  None = 'none'
+  Google = 'google'
 }
 
 export enum TypeRole {
@@ -165,7 +219,6 @@ export type User = {
   avatar?: Maybe<Scalars['String']['output']>;
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  phone: Scalars['String']['output'];
   provider_id: Scalars['String']['output'];
   provider_type: TypeProvider;
   role: TypeRole;

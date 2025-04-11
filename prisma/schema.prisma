@@ -142,6 +142,7 @@ model directus_files {
   tus_data                                                              Json?               @db.Json
   uploaded_on                                                           DateTime?           @db.Timestamptz(6)
   blogs                                                                 blogs[]
+  collections                                                           collections[]
   directus_folders                                                      directus_folders?   @relation(fields: [folder], references: [id], onUpdate: NoAction, map: "directus_files_folder_foreign")
   directus_users_directus_files_modified_byTodirectus_users             directus_users?     @relation("directus_files_modified_byTodirectus_users", fields: [modified_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "directus_files_modified_by_foreign")
   directus_users_directus_files_uploaded_byTodirectus_users             directus_users?     @relation("directus_files_uploaded_byTodirectus_users", fields: [uploaded_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "directus_files_uploaded_by_foreign")
@@ -439,6 +440,8 @@ model directus_users {
   theme_dark_overrides                                                    Json?                    @db.Json
   blogs_blogs_user_createdTodirectus_users                                blogs[]                  @relation("blogs_user_createdTodirectus_users")
   blogs_blogs_user_updatedTodirectus_users                                blogs[]                  @relation("blogs_user_updatedTodirectus_users")
+  collections_collections_user_createdTodirectus_users                    collections[]            @relation("collections_user_createdTodirectus_users")
+  collections_collections_user_updatedTodirectus_users                    collections[]            @relation("collections_user_updatedTodirectus_users")
   directus_access                                                         directus_access[]
   directus_comments_directus_comments_user_createdTodirectus_users        directus_comments[]      @relation("directus_comments_user_createdTodirectus_users")
   directus_comments_directus_comments_user_updatedTodirectus_users        directus_comments[]      @relation("directus_comments_user_updatedTodirectus_users")
@@ -549,6 +552,8 @@ model products {
   description                                          String?          @default("Nhập chi tiết sản phẩm")
   meta_description                                     String?
   slug                                                 String?          @unique(map: "products_slug_unique") @default("/") @db.VarChar(255)
+  collections                                          Json?            @db.Json
+  price                                                Int?
   directus_files                                       directus_files?  @relation(fields: [thumbnail], references: [id], onUpdate: NoAction, map: "products_thumbnail_foreign")
   directus_users_products_user_createdTodirectus_users directus_users?  @relation("products_user_createdTodirectus_users", fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_user_created_foreign")
   directus_users_products_user_updatedTodirectus_users directus_users?  @relation("products_user_updatedTodirectus_users", fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_user_updated_foreign")
@@ -617,4 +622,20 @@ model user {
   phone          String?         @db.VarChar(255)
   sessions       sessions[]
   directus_users directus_users? @relation(fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_user_updated_foreign")
+}
+
+model collections {
+  id                                                      Int             @id @default(autoincrement())
+  status                                                  String          @default("draft") @db.VarChar(255)
+  sort                                                    Int?
+  user_created                                            String?         @db.Uuid
+  date_created                                            DateTime?       @db.Timestamptz(6)
+  user_updated                                            String?         @db.Uuid
+  date_updated                                            DateTime?       @db.Timestamptz(6)
+  title                                                   String?         @db.VarChar(255)
+  thumbnail                                               String?         @db.Uuid
+  description                                             String?
+  directus_files                                          directus_files? @relation(fields: [thumbnail], references: [id], onUpdate: NoAction, map: "collections_thumbnail_foreign")
+  directus_users_collections_user_createdTodirectus_users directus_users? @relation("collections_user_createdTodirectus_users", fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "collections_user_created_foreign")
+  directus_users_collections_user_updatedTodirectus_users directus_users? @relation("collections_user_updatedTodirectus_users", fields: [user_updated], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "collections_user_updated_foreign")
 }
