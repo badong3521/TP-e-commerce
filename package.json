@@ -9,6 +9,7 @@
     "lint": "eslint --ext .ts .",
     "build-orm": "prisma db pull && prisma generate",
     "docker": "docker compose build",
+    "docker-arm": "docker buildx build --platform linux/amd64 -t badong35/tp-ecommerce-api:latest .",
     "generate-types": "graphql-codegen --config codegen.yml"
   },
   "devDependencies": {

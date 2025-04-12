@@ -122,7 +122,7 @@ export const getAllProducts = async () => {
         }
 
         // Log chi tiết từng sản phẩm để debug
-        products.forEach((product, index) => {
+        products.forEach((product: any, index: number) => {
             console.log(`Sản phẩm ${index + 1}:`, {
                 id: product.id,
                 title: product.title,
@@ -133,7 +133,7 @@ export const getAllProducts = async () => {
         });
 
         // Chuyển đổi dữ liệu và log để debug
-        const result = products.map((product) => {
+        const result = products.map((product: any) => {
             try {
                 // Xử lý collections
                 let collections = [];
@@ -156,12 +156,12 @@ export const getAllProducts = async () => {
 
                 // Xử lý images
                 const images = product.products_files && product.products_files.length > 0
-                    ? product.products_files.map((pf) => pf.directus_files).filter(Boolean)
+                    ? product.products_files.map((pf: any) => pf.directus_files).filter(Boolean)
                     : [];
 
                 // Xử lý tags
                 const tags = product.tags_products && product.tags_products.length > 0
-                    ? product.tags_products.map((tp) => tp.tags).filter(Boolean)
+                    ? product.tags_products.map((tp: any) => tp.tags).filter(Boolean)
                     : [];
 
                 return {
@@ -258,6 +258,16 @@ export const getProductById = async (id: number) => {
             collections = [];
         }
 
+        // Xử lý images cho getProductById
+        const images = product.products_files && product.products_files.length > 0
+            ? product.products_files.map((pf: any) => pf.directus_files).filter(Boolean)
+            : [];
+
+        // Xử lý tags cho getProductById
+        const tags = product.tags_products && product.tags_products.length > 0
+            ? product.tags_products.map((tp: any) => tp.tags).filter(Boolean)
+            : [];
+
         return {
             id: product.id,
             title: product.title,
@@ -266,8 +276,8 @@ export const getProductById = async (id: number) => {
             price: product.price,
             slug: product.slug,
             collections: collections,
-            images: product.products_files.map((pf) => pf.directus_files),
-            tags: product.tags_products.map((tp) => tp.tags),
+            images: images,
+            tags: tags,
             status: product.status,
             createdAt: product.date_created?.toISOString(),
             updatedAt: product.date_updated?.toISOString(),
@@ -314,7 +324,8 @@ export const getProductsByCollection = async (collectionId: number) => {
             },
         })
 
-        return products.map((product) => {
+        // Xử lý sản phẩm trong getProductsByCollection
+        const result = products.map((product: any) => {
             // Xử lý collections tương tự như trong các hàm khác
             let collections = [];
             try {
@@ -333,6 +344,20 @@ export const getProductsByCollection = async (collectionId: number) => {
                 collections = [];
             }
 
+            collections.forEach((collection: any) => {
+                // Xử lý từng collection nếu cần
+            });
+
+            // Xử lý images cho getProductsByCollection
+            const images = product.products_files && product.products_files.length > 0
+                ? product.products_files.map((pf: any) => pf.directus_files).filter(Boolean)
+                : [];
+
+            // Xử lý tags cho getProductsByCollection
+            const tags = product.tags_products && product.tags_products.length > 0
+                ? product.tags_products.map((tp: any) => tp.tags).filter(Boolean)
+                : [];
+
             return {
                 id: product.id,
                 title: product.title,
@@ -341,13 +366,15 @@ export const getProductsByCollection = async (collectionId: number) => {
                 price: product.price,
                 slug: product.slug,
                 collections: collections,
-                images: product.products_files.map((pf) => pf.directus_files),
-                tags: product.tags_products.map((tp) => tp.tags),
+                images: images,
+                tags: tags,
                 status: product.status,
                 createdAt: product.date_created?.toISOString(),
                 updatedAt: product.date_updated?.toISOString(),
             };
         });
+
+        return result;
     } catch (error) {
         console.error(`Error fetching products for collection ${collectionId}:`, error);
         throw new Error(`Failed to fetch products for collection ${collectionId}`);
@@ -366,11 +393,11 @@ export const getAllCollections = async () => {
             },
         })
 
-        return collections.map((collection) => ({
+        // Xử lý collections trong getAllCollections
+        return collections.map((collection: any) => ({
             id: collection.id,
             title: collection.title,
             description: collection.description,
-            thumbnail: collection.directus_files,
             status: collection.status,
             createdAt: collection.date_created?.toISOString(),
             updatedAt: collection.date_updated?.toISOString(),
